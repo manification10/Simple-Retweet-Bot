@@ -8,5 +8,6 @@ political_words = [
     'trump',
     'obama',
     'clinton',
-    'negro',
+    'republican',
+    'congress'
 ]

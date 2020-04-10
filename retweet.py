@@ -9,7 +9,8 @@ from time import sleep
 # Import in your Twitter application keys, tokens, and secrets.
 # Make sure your keys.py file lives in the same directory as this .py file.
 from keys import *
-from tweet_analysis import isEnglish, isBot
+from tweet_analysis import isEnglish, isBot, isPolitical
+from keywords import twitter_seach_keywords
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
@@ -18,27 +19,29 @@ api = tweepy.API(auth)
 # Where q='#example', change #example to whatever hashtag or keyword you want to search.
 # Where items(5), change 5 to the amount of retweets you want to tweet.
 # Make sure you read Twitter's rules on automation - don't spam!
-for tweet in tweepy.Cursor(api.search, q='coronavirus diagnosed').items(5):
-    # process tweet for verified, political, personal story senttiment
-    isBotVal = isBot(tweet.user.id)
-    isEnglishVal = isEnglish(tweet)
-    # add reaching more mechanism
-    if (not isBotVal) and isEnglishVal :
-        try:
-            print('\nRetweet Bot found tweet by @' + tweet.user.screen_name + '. ' + 'Attempting to retweet.')
+for search_keyword in twitter_seach_keywords:
+    for tweet in tweepy.Cursor(api.search, q=search_keyword).items(5):
+        isBotVal = isBot(tweet.user.id)
+        isEnglishVal = isEnglish(tweet)
+        isPoliticalVal = isPolitical(tweet)
+        # add reaching more mechanism
+        if (not isBotVal) and isEnglishVal and (not isPoliticalVal):
+            try:
+                print('\nRetweet Bot found tweet by @' +
+                      tweet.user.screen_name + '. ' + 'Attempting to retweet.')
 
-            tweet.retweet()
-            print('Retweet published successfully.')
+                tweet.retweet()
+                print('Retweet published successfully.')
 
-            # Where sleep(10), sleep is measured in seconds.
-            # Change 10 to amount of seconds you want to have in-between retweets.
-            # Read Twitter's rules on automation. Don't spam!
-            sleep(10)
+                # Where sleep(10), sleep is measured in seconds.
+                # Change 10 to amount of seconds you want to have in-between retweets.
+                # Read Twitter's rules on automation. Don't spam!
+                sleep(10)
 
-        # Some basic error handling. Will print out why retweet failed, into your terminal.
-        except tweepy.TweepError as error:
-            print('\nError. Retweet not successful. Reason: ')
-            print(error.reason)
+            # Some basic error handling. Will print out why retweet failed, into your terminal.
+            except tweepy.TweepError as error:
+                print('\nError. Retweet not successful. Reason: ')
+                print(error.reason)
 
-        except StopIteration:
-            break
+            except StopIteration:
+                break
