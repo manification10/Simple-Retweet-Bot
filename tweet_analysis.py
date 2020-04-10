@@ -19,13 +19,18 @@ bom = botometer.Botometer(wait_on_ratelimit=True,
 
 def isBot(userid):
     result = bom.check_account(userid)
-    display_scores = result["display_scores"])
+    display_scores = result["display_scores"]
     display_scores_mean = np.array(list(display_scores.values())).mean()
     if display_scores_mean >= 4.0:
+        print("Propbably a bot.")
         return True
     return False
 
+def isEnglish(tweet):
+    if tweet.lang == 'en':
+        return True
+    return False
+
+
 def checkUserVerified(tweet):
     return tweet.user.verified
-
-isBot('TidePod89577871')
