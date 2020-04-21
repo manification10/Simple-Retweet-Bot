@@ -20,7 +20,8 @@ api = tweepy.API(auth)
 # Where items(5), change 5 to the amount of retweets you want to tweet.
 # Make sure you read Twitter's rules on automation - don't spam!
 for search_keyword in twitter_seach_keywords:
-    for tweet in tweepy.Cursor(api.search, q=search_keyword).items(5):
+    for tweet in tweepy.Cursor(api.search, q=search_keyword, include_entities=True).items(5):
+        url = "https://twitter.com/"+tweet.user.screen_name+"/status/"+str(tweet.id)
         isBotVal = isBot(tweet.user.id)
         isEnglishVal = isEnglish(tweet)
         isPoliticalVal = isPolitical(tweet)
@@ -30,8 +31,8 @@ for search_keyword in twitter_seach_keywords:
                 print('\nRetweet Bot found tweet by @' +
                       tweet.user.screen_name + '. ' + 'Attempting to retweet.')
 
-                tweet.retweet()
-                print('Retweet published successfully.')
+                api.update_status("#coronavirus #pandemic #CoronavirusStories #COVID-19 "+url)
+                print('Retweet published successfully of:'+url)
 
                 # Where sleep(10), sleep is measured in seconds.
                 # Change 10 to amount of seconds you want to have in-between retweets.
